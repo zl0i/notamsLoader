@@ -1,0 +1,26 @@
+{
+  "name": "notamsbyvou",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node main.ts"
+  },
+  "keywords": [
+    "notams"
+  ],
+  "author": "zloi",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.3",
+    "@types/node": "^16.10.3",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  },
+  "dependencies": {
+    "axios": "^0.22.0",
+    "js-yaml": "^4.1.0",
+    "node-html-parser": "^4.1.5"
+  }
+}
