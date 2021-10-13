@@ -5,11 +5,13 @@ export type Point = {
 }
 
 export class Notam {
+    public id: string
     public start_date: Date
     public end_date: Date
     public create_date: Date
     public text: string
-    public flight_level: number
+    public fl_start: number
+    public fl_end: number
     public points: Point[] = new Array()
     public duration_sec: number
     public duration_str: string
@@ -20,13 +22,22 @@ export class Notam {
     }
 
     public print(f: Function) {
-        f(this.flight_level)
+        f(this)
     }
 
     private parse(text: string) {
-        const fl_pos = text.match(/(SFC)(.){0,3}((FL)\d+|UNL)/gm)
+        const fl_pos = text.match(/(SFC|FL\d+)(.){0,3}((FL)\d+|UNL)/gm)        
         if (fl_pos) {
-            this.flight_level = Number(fl_pos[0].match(/(\d+|UNL)/)[0]) || 1000000
+            if (/(FL\d+).{0,3}(FL\d+)/.test(fl_pos[0])) {
+                this.fl_start = Number(fl_pos[0].match(/\d+/g)[0])
+                this.fl_end = Number(fl_pos[0].match(/\d+/g)[1])
+            } else if(/(SFC).{0,3}(FL\d+)/.test(fl_pos[0])) {
+                this.fl_start = 0
+                this.fl_end = Number(fl_pos[0].match(/\d+/g)[0])
+            } else {
+                this.fl_start = 0
+                this.fl_end = 10000
+            }
         }
 
         const point_arr = text.match(/\d+[NS]\d+[WE]/gm)
@@ -109,16 +120,16 @@ export class Notam {
 
         const len_x = str_x.slice(0, -1).length
         if (str_x.slice(-1) == 'N') {
-            point.x = Number(str_x.slice(0, -1)) / Math.pow(100, len_x - 3)
+            point.x = Number(str_x.slice(0, -1)) / Math.pow(10, len_x - 2)
         } else {
-            point.x = -Number(str_x.slice(0, -1)) / Math.pow(100, len_x - 3)
+            point.x = -Number(str_x.slice(0, -1)) / Math.pow(10, len_x - 2)
         }
 
         const len_y = str_y.slice(0, -1).length
         if (str_y.slice(-1) == 'W') {
-            point.y = Number(str_y.slice(0, -1)) / Math.pow(100, len_y - 4)
+            point.y = Number(str_y.slice(0, -1)) / Math.pow(100, len_y - 5)
         } else {
-            point.y = -Number(str_y.slice(0, -1)) / Math.pow(100, len_y - 4)
+            point.y = -Number(str_y.slice(0, -1)) / Math.pow(100, len_y - 5)
         }
         return point
     }
