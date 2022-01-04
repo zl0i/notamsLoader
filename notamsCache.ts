@@ -1,11 +1,13 @@
 import fs from 'fs';
 import md5 from 'md5'
+import NotamFilter from './filter';
 import { Notam } from './notam';
 
 interface cacheData {
     date: string,
     icaos: string[],
-    notams: Notam[]
+    notams: Notam[],
+    filter: any
 }
 
 export default class NotamsCache {
@@ -14,12 +16,13 @@ export default class NotamsCache {
     private path: string
     private data: cacheData
 
-    constructor(notams: string[], path: string = '.') {
+    constructor(notams: string[], path: string = '.', filter?: NotamFilter) {
         this.path = path
         this.fileName = `t${new Date().getTime()}-${md5(notams.join(''))}`
         this.data = {
             date: new Date().toISOString(),
             icaos: notams,
+            filter: filter.setting(),
             notams: []
         }
     }

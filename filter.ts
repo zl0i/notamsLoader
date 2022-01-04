@@ -14,6 +14,37 @@ export default class NotamFilter {
 
     constructor() { }
 
+    set(key: string, val: string | number) {
+        switch (key) {
+            case "fl_start": {
+                this.fl_start = Number(val)
+                break
+            }
+            case "fl_end": {
+                this.fl_end = Number(val)
+                break
+            }
+            case "duration": {
+                this.duration = String(val)
+                break
+            }
+            case "regexp": {
+                this.regexp = RegExp(val as string)
+                break
+            }
+            case "start_date": {
+                this.start_date = new Date(val)
+                break
+            }
+            case "end_date": {
+                this.end_date = new Date(val)
+                break
+            }
+            default:
+                throw new Error(`${key} does not exist for filter`)
+        }
+    }
+
     check(n: Notam) {
         if (this.fl_start) {
             if (!n.fl_start)
@@ -74,6 +105,10 @@ export default class NotamFilter {
             case 'd':
                 return 86400
         }
+    }
+
+    public setting() {
+        return {}
     }
 
 }
