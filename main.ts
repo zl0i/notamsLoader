@@ -35,26 +35,21 @@ const zona: string[] = [
 ]; //data['notams']
 
 async function handleGet(argv: any) {
-  if (!argv.notams)
-    throw new Error("notams undefined. use --notams");
+  if (!argv.icao)
+    throw new Error("notams undefined. use --icao");
 
-  const notams = await FetchNotams.fetch(argv.notams);
+  const notams = await FetchNotams.fetch(argv.icao);
 
 
-  const filter = parseFilter(argv.filter)
+  //const filter = parseFilter(argv.filter)
   const arr: Notam[] = new Array()
   for (let n of notams) {
     const nt = new Notam(n.rawText);
-    if (filter.check(nt))
+    //if (filter.check(nt))
       arr.push(nt)
   }
-
-
-  if (argv.output == "console") {
-    console.log(JSON.stringify(arr))
-  } else {
-    const file = new NotamsCache(argv.notams);
-  }
+  console.log(JSON.stringify(arr))
+ 
 }
 
 function parseFilter(filters: string[]) {
@@ -80,15 +75,14 @@ const y = yargs(process.argv.slice(2))
       });
     },
     (argv) => {
-      console.log(argv);
+      //console.log(argv);
       //if (argv.verbose) console.info(`start server on :${argv.port}`);
-      console.log("get notams....");
       handleGet(argv);
     }
   )
-  .option("notams", {
-    alias: "n",
-    description: "Get this notams",
+  .option("icao", {
+    alias: "i",
+    description: "get notams by icao",
     type: "array",
   })
   .option("verbose", {

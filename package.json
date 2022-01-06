@@ -5,7 +5,8 @@
   "main": "main.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node main.ts"
+    "start": "ts-node main.ts",
+    "build": "tsc & npx pkg -t node14-win-x64 build/main.js -o notams.exe"
   },
   "keywords": [
     "notams"
