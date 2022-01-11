@@ -12,13 +12,14 @@ export class Notam {
     public text: string
     public fl_start: number
     public fl_end: number
-    public points: Point[] = new Array()
+    public isUNL: boolean = false
+    public points: Array<Point[]> = new Array()
     public duration_sec: number
     public duration_str: string
 
     constructor(notam: string) {
         this.text = notam.replace(/\n/gm, ' ')
-        this.parse(notam)
+        this.parse(this.text)
     }
 
     public print(f: Function) {
@@ -26,23 +27,30 @@ export class Notam {
     }
 
     private parse(text: string) {
-        const fl_pos = text.match(/(SFC|FL\d+)(.){0,3}((FL)\d+|UNL)/gm)        
+        this.id = text.match(/(?<=(<b>))(.*)?(?=(<\/b>))/gm)[0]
+        const fl_pos = text.match(/(SFC|FL\d+)(.){0,3}((FL)\d+|UNL)/gm)
         if (fl_pos) {
             if (/(FL\d+).{0,3}(FL\d+)/.test(fl_pos[0])) {
                 this.fl_start = Number(fl_pos[0].match(/\d+/g)[0])
                 this.fl_end = Number(fl_pos[0].match(/\d+/g)[1])
-            } else if(/(SFC).{0,3}(FL\d+)/.test(fl_pos[0])) {
+            } else if (/(SFC).{0,3}(FL\d+)/.test(fl_pos[0])) {
                 this.fl_start = 0
                 this.fl_end = Number(fl_pos[0].match(/\d+/g)[0])
             } else {
                 this.fl_start = 0
-                this.fl_end = 10000
+                this.fl_end = Infinity
+                this.isUNL = true
             }
         }
 
-        const point_arr = text.match(/\d+[NS]\d+[WE]/gm)
-        if (point_arr) {
-            this.points = point_arr.map(el => this.formatCoordinate(el.match((/\d+[NS]/))[0], el.match((/\d+[WE]/))[0]))
+        const areas = text.match(/(\d+[NS]\d+[WE]\sTO\s){3,}(POINT OF ORIGIN)/gm) ?? []
+        for (const area of areas) {
+            const points_str = area.match(/\d+[NS]\d+[WE]/gm)
+            this.points.push(
+                points_str.map(
+                    el => this.formatCoordinate(el.match((/\d+[NS]/))[0], el.match((/\d+[WE]/))[0])
+                )
+            )
         }
 
         const dates = text.match(/[\d+]{2}\s[A-Z]{3}\s[\d]{2}:[\d]{2}\s[\d]{4}/gm)
@@ -119,17 +127,15 @@ export class Notam {
         const point: Point = { x: 0, y: 0 }
 
         const len_x = str_x.slice(0, -1).length
-        if (str_x.slice(-1) == 'N') {
-            point.x = Number(str_x.slice(0, -1)) / Math.pow(10, len_x - 2)
-        } else {
-            point.x = -Number(str_x.slice(0, -1)) / Math.pow(10, len_x - 2)
+        point.x = Number(str_x.slice(0, -1)) / Math.pow(10, len_x - 2)
+        if (str_x.slice(-1) == 'S') {
+            point.x = -point.x
         }
 
         const len_y = str_y.slice(0, -1).length
-        if (str_y.slice(-1) == 'W') {
-            point.y = Number(str_y.slice(0, -1)) / Math.pow(100, len_y - 5)
-        } else {
-            point.y = -Number(str_y.slice(0, -1)) / Math.pow(100, len_y - 5)
+        point.y = Number(str_y.slice(0, -1)) / Math.pow(10, len_y - 3)
+        if (str_y.slice(-1) == 'E') {
+            point.y = -point.y
         }
         return point
     }
