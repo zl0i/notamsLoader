@@ -40,16 +40,12 @@ async function handleGet(argv: any) {
 
   const notams = await FetchNotams.fetch(argv.icao);
 
-
-  //const filter = parseFilter(argv.filter)
   const arr: Notam[] = new Array()
   for (let n of notams) {
     const nt = new Notam(n.rawText);
-    //if (filter.check(nt))
-      arr.push(nt)
+    arr.push(nt)
   }
   console.log(JSON.stringify(arr))
- 
 }
 
 function parseFilter(filters: string[]) {
