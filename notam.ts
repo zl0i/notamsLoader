@@ -131,10 +131,9 @@ export class Notam {
         if (str_x.slice(-1) == 'S') {
             point.x = -point.x
         }
-
         const len_y = str_y.slice(0, -1).length
         point.y = Number(str_y.slice(0, -1)) / Math.pow(10, len_y - 3)
-        if (str_y.slice(-1) == 'E') {
+        if (str_y.slice(-1) == 'W') {
             point.y = -point.y
         }
         return point
