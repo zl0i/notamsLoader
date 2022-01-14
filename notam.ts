@@ -52,6 +52,18 @@ export class Notam {
                 )
             )
         }
+        if (areas.length == 0) {
+            const points = text.match(/[0-9]*[.][0-9]+[NS]\s[0-9]*[.][0-9]+[EW]/gm) ?? []
+            const p: Point[] = new Array()
+            for (const point of points) {
+                p.push(this.formatCoordinate2(
+                    point.match(/[0-9]*[.][0-9]+[NS]/gm)[0],
+                    point.match(/[0-9]*[.][0-9]+[EW]/gm)[0]))
+            }
+            p.pop()
+            this.points.push(p)
+        }
+
 
         const dates = text.match(/[\d+]{2}\s[A-Z]{3}\s[\d]{2}:[\d]{2}\s[\d]{4}/gm)
         if (dates) {
@@ -133,6 +145,22 @@ export class Notam {
         }
         const len_y = str_y.slice(0, -1).length
         point.y = Number(str_y.slice(0, -1)) / Math.pow(10, len_y - 3)
+        if (str_y.slice(-1) == 'W') {
+            point.y = -point.y
+        }
+        return point
+    }
+
+    private formatCoordinate2(str_x: string, str_y: string): Point {
+        const point: Point = { x: 0, y: 0 }
+
+        const len_x = str_x.slice(0, -1).length
+        point.x = Number(str_x.slice(0, -1)) / Math.pow(10, len_x - 5)
+        if (str_x.slice(-1) == 'S') {
+            point.x = -point.x
+        }
+        const len_y = str_y.slice(0, -1).length
+        point.y = Number(str_y.slice(0, -1)) / Math.pow(10, len_y - 6)
         if (str_y.slice(-1) == 'W') {
             point.y = -point.y
         }
