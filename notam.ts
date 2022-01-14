@@ -61,7 +61,8 @@ export class Notam {
                     point.match(/[0-9]*[.][0-9]+[EW]/gm)[0]))
             }
             p.pop()
-            this.points.push(p)
+            if (p.length > 0)
+                this.points.push(p)
         }
 
 
