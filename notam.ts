@@ -43,7 +43,7 @@ export class Notam {
             }
         }
 
-        const areas = text.match(/(\d+[NS]\d+[WE]\sTO\s){3,}(POINT OF ORIGIN)/gm) ?? []
+        const areas = text.match(/((\d+[NS]\d+[WE]\s)(TO\s){0,1}){3,}(POINT OF ORIGIN)/gm) ?? []
         for (const area of areas) {
             const points_str = area.match(/\d+[NS]\d+[WE]/gm)
             this.points.push(
